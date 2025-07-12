@@ -1,0 +1,391 @@
+{
+  "name": "Github Day Trend",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "4e2b685b-3400-4777-b5eb-3919786bd1c2",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        140,
+        -120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "box",
+              "cssSelector": "div.Box",
+              "returnValue": "html"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9b986b58-b10e-4e37-8317-af5f79434d8d",
+      "name": "Extract Box",
+      "type": "n8n-nodes-base.html",
+      "position": [
+        600,
+        -120
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "url": "https://github.com/trending",
+        "options": {}
+      },
+      "id": "9146465f-a848-4a2d-a62b-b8c9b820368d",
+      "name": "Request to Github Trend",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        360,
+        -120
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "repositories",
+        "options": {}
+      },
+      "id": "720f5ddf-a75a-4341-846c-a47b01277bed",
+      "name": "Turn to a list",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        1000,
+        -120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a0e76646-60d7-44a6-af77-33f27fb465cb",
+              "name": "author",
+              "type": "string",
+              "value": "={{ $('Extract repository data').item.json.repository.split('/')[0].trim() }}"
+            },
+            {
+              "id": "a2bd790a-784e-4d72-9a4e-92be22edea8f",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $('Extract repository data').item.json.repository.split('/')[1].trim() }}"
+            },
+            {
+              "id": "baff9a9f-020a-4968-bb80-a4a91a94144a",
+              "name": "url",
+              "type": "string",
+              "value": "=https://github.com/{{ $('Extract repository data').item.json.repository.replaceAll(' / ','/') }}"
+            },
+            {
+              "id": "2ca08813-154b-43a9-8b4b-696edf22ae55",
+              "name": "stargazers_count",
+              "value": "={{ $('Get Star').item.json.stargazers_count }}",
+              "type": "string"
+            },
+            {
+              "id": "d7b2c5d9-5afe-4b9a-80fa-bc092d505d75",
+              "name": "content",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": "=",
+        "options": {}
+      },
+      "id": "4b5fc53c-fd69-440b-90f4-fe076d90cb6b",
+      "name": "Set Result Variables",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1140,
+        180
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "repositories",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "repository",
+              "cssSelector": "a.Link"
+            },
+            {
+              "key": "language",
+              "cssSelector": "span.d-inline-block"
+            },
+            {
+              "key": "description",
+              "cssSelector": "p"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ea01df45-3ef8-4314-b21b-9938c4853db2",
+      "name": "Extract repository data",
+      "type": "n8n-nodes-base.html",
+      "position": [
+        1220,
+        -120
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "box",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "repositories",
+              "cssSelector": "article.Box-row",
+              "returnValue": "html",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true,
+          "cleanUpText": true
+        }
+      },
+      "id": "9163cebf-9ee3-4e87-9e7f-f2d61d7b5375",
+      "name": "Extract all repositories",
+      "type": "n8n-nodes-base.html",
+      "position": [
+        800,
+        -120
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repository.replace(' / ','/') }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        180,
+        180
+      ],
+      "id": "9b700b57-8f2c-47a8-9fd0-dc3908afbff7",
+      "name": "Get Star",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "RU3Yltqqbes1p10g",
+          "name": "GitHub Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.full_name }}/readme ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        360,
+        180
+      ],
+      "id": "05456a66-3cf7-4bc2-9629-45f4fb8363c8",
+      "name": "Get Readme",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "RU3Yltqqbes1p10g",
+          "name": "GitHub Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 获取输入数据\nconst inputData = $input.all();\n\n// 处理每个项目\nconst outputData = inputData.map(item => {\n  const data = item.json;\n  \n  // 解码 base64 内容\n  if (data.content && data.encoding === 'base64') {\n    // 移除换行符并解码\n    const cleanBase64 = data.content.replace(/\\n/g, '');\n    item.json.content = Buffer.from(cleanBase64, 'base64').toString('utf-8');\n    return data;\n  }  \n  return data;\n});\n\nreturn outputData;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        180
+      ],
+      "id": "b480ade4-b62e-4b7f-997d-0f86ca6111f2",
+      "name": "Decode Readme"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=这是一段github项目的描述信息，用一句话介绍下这个项目，直接输出结果即可，无需其他解释：\n{{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        760,
+        180
+      ],
+      "id": "f9aa896e-11cc-4bca-9a9e-8fb531a54892",
+      "name": "Summarize",
+      "credentials": {
+        "openAiApi": {
+          "id": "qAAiMHdUWMn5gwEL",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract Box": {
+      "main": [
+        [
+          {
+            "node": "Extract all repositories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Turn to a list": {
+      "main": [
+        [
+          {
+            "node": "Extract repository data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract repository data": {
+      "main": [
+        [
+          {
+            "node": "Get Star",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request to Github Trend": {
+      "main": [
+        [
+          {
+            "node": "Extract Box",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract all repositories": {
+      "main": [
+        [
+          {
+            "node": "Turn to a list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Request to Github Trend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Result Variables": {
+      "main": [
+        []
+      ]
+    },
+    "Get Star": {
+      "main": [
+        [
+          {
+            "node": "Get Readme",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Readme": {
+      "main": [
+        [
+          {
+            "node": "Decode Readme",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decode Readme": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Set Result Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c3b27e49-8efa-453e-89cd-fc36cf57aa71",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d727000b424ffae87eb9f74bf14818833b0e49affcc16112708e4f782186325b"
+  },
+  "id": "aqsmS2yI4gaVGuKu",
+  "tags": []
+}
