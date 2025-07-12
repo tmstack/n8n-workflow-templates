@@ -4,7 +4,7 @@ Explore reusable n8n workflow automation templates to easily automate your work.
 
 ## Featured Templates
 
-### [Github-Day-Trend](/templates/Github-Day-Trend.json)
+### [Github Day Trend](/templates/Github-Day-Trend.json)
 
 ---
 
