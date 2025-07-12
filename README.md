@@ -4,10 +4,7 @@ Explore reusable n8n workflow automation templates to easily automate your work.
 
 ## Featured Templates
 
-- [Github-Day-Trend](/templates/Github-Day-Trend.json)
-
-**Workflow Name**  
-**Github Day Trend**
+[Github-Day-Trend](/templates/Github-Day-Trend.json)
 
 ---
 
@@ -57,6 +54,7 @@ Manually browsing GitHub Trending is time-consuming and makes it difficult to or
 **One-Sentence Summary**  
 The Github Day Trend workflow leverages automation and intelligent summarization to help you effortlessly stay on top of daily trending GitHub projects, boosting efficient information acquisition and content creation.
 
+---
 
 https://n8ntemplates.dev
 
